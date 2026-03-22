@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programa de Movilidad — Fútbol Sala</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --card: #1a1e28;
+    --accent: #e8ff3c;
+    --accent2: #3cffe8;
+    --accent3: #ff6b3c;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --border: #2a2f3d;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(232,255,60,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,255,60,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+    position: relative; z-index: 1;
+  }
+
+  /* HEADER */
+  .tag { display: inline-block; background: var(--accent); color: #0d0f14; font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; padding: 4px 12px; margin-bottom: 16px; }
+  h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(44px, 8vw, 88px); line-height: 0.9; letter-spacing: 2px; margin-bottom: 14px; }
+  h1 span { color: var(--accent); }
+  .subtitle { color: var(--muted); font-size: 14px; line-height: 1.7; max-width: 560px; margin-bottom: 32px; }
+
+  header { border-bottom: 1px solid var(--border); padding-bottom: 32px; margin-bottom: 32px; }
+
+  /* NOTA */
+  .nota { background: rgba(232,255,60,0.06); border: 1px solid rgba(232,255,60,0.2); border-left: 3px solid var(--accent); padding: 14px 18px; margin-bottom: 32px; }
+  .nota p { font-size: 13px; color: #9ca3af; line-height: 1.7; }
+  .nota strong { color: var(--accent); }
+
+  /* INFO CHIPS */
+  .info-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; }
+  .chip { display: flex; align-items: center; gap: 6px; background: var(--card); border: 1px solid var(--border); padding: 7px 14px; font-size: 12px; font-weight: 500; }
+  .chip-label { color: var(--muted); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+  .chip-val { color: var(--text); font-weight: 600; }
+
+  /* SECTION HEADER */
+  .section-header { display: flex; align-items: center; gap: 16px; margin: 40px 0 20px; }
+  .section-num { font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 3px; color: var(--muted); }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px; color: var(--accent); white-space: nowrap; }
+  .section-line { flex: 1; height: 1px; background: var(--border); }
+
+  /* ZONE TAG */
+  .zone-tag { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 14px; }
+  .zone-label { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 3px; color: var(--muted); }
+  .zone-bar { height: 2px; width: 32px; background: var(--accent); }
+
+  /* TARJETA EJERCICIO */
+  .ejercicios-doc { display: flex; flex-direction: column; gap: 12px; }
+
+  .tarjeta {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 20px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tarjeta:hover { transform: translateX(4px); background: rgba(232,255,60,0.04); }
+  .tarjeta.zona-rodilla { border-left-color: var(--accent2); }
+  .tarjeta.zona-cadera { border-left-color: var(--accent3); }
+  .tarjeta.zona-tronco { border-left-color: #a78bfa; }
+
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  .nombre { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; }
+  .b-y { background: rgba(232,255,60,0.12); color: var(--accent); }
+  .b-c { background: rgba(60,255,232,0.12); color: var(--accent2); }
+  .b-o { background: rgba(255,107,60,0.12); color: var(--accent3); }
+  .b-g { background: rgba(255,255,255,0.06); color: var(--muted); }
+  .b-p { background: rgba(167,139,250,0.12); color: #a78bfa; }
+
+  .icono { font-size: 18px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; margin-top: 2px; }
+  .tarjeta.open .icono { transform: rotate(180deg); }
+
+  .detalle { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .tarjeta.open .detalle { display: block; }
+  .desc { font-size: 13px; color: #9ca3af; line-height: 1.8; }
+  .consejo { font-size: 12px; color: var(--muted); font-style: italic; padding-left: 12px; border-left: 2px solid var(--border); margin-top: 10px; }
+
+  /* DÍAS */
+  .dias-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 8px; }
+  @media (max-width: 600px) { .dias-grid { grid-template-columns: 1fr; } }
+  .dia-card { background: var(--card); border: 1px solid var(--border); padding: 16px 20px; }
+  .dia-num { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--accent); line-height: 1; }
+  .dia-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .dia-list { font-size: 12px; color: #9ca3af; line-height: 2; }
+
+  /* FOOTER */
+  doc-footer { display: block; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--border); text-align: center; font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+
+  /* PRINT */
+  @media print {
+    body::before { display: none; }
+    .tarjeta.open .detalle, .detalle { display: block !important; }
+    .icono { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header>
+    <div class="tag">TSEAS · Acondicionamiento Físico Deportivo</div>
+    <h1>PROGRAMA DE<br><span>MOVILIDAD</span></h1>
+    <p class="subtitle">Programa de mejora de rangos de movimiento específico para jugadores de fútbol sala. Orientado a tobillo, rodilla, cadera y tronco — las articulaciones clave del deporte en pista.</p>
+
+    <!-- Chips -->
+    <div class="info-row">
+      <div class="chip"><span class="chip-label">Cliente</span><span class="chip-val">Varón · 18 años</span></div>
+      <div class="chip"><span class="chip-label">Deporte</span><span class="chip-val">Fútbol Sala</span></div>
+      <div class="chip"><span class="chip-label">Frecuencia</span><span class="chip-val">3 días / semana</span></div>
+      <div class="chip"><span class="chip-label">Objetivo</span><span class="chip-val">Mejorar movilidad articular</span></div>
+      <div class="chip"><span class="chip-label">Duración sesión</span><span class="chip-val">~35–45 min</span></div>
+    </div>
+  </header>
+
+  <!-- NOTA -->
+  <div class="nota">
+    <p><strong>Aviso:</strong> Este programa debe realizarse con la musculatura caliente (al final del entrenamiento o tras 5–10 min de activación aeróbica ligera). Las sensaciones deben ser de tensión tolerable, nunca de dolor agudo. Ante cualquier molestia articular, consultar con un profesional sanitario antes de continuar.</p>
+  </div>
+
+  <!-- PLANIFICACIÓN SEMANAL -->
+  <div class="section-header">
+    <span class="section-num">00</span>
+    <h2 class="section-title">DISTRIBUCIÓN SEMANAL</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="dias-grid">
+    <div class="dia-card">
+      <div class="dia-num">L</div>
+      <div class="dia-label">Día 1 — Lunes</div>
+      <div class="dia-list">
+        Movilidad tobillo<br>
+        Movilidad rodilla<br>
+        Cadera (sagital)<br>
+        Tronco (flexión)
+      </div>
+    </div>
+    <div class="dia-card">
+      <div class="dia-num">X</div>
+      <div class="dia-label">Día 2 — Miércoles</div>
+      <div class="dia-list">
+        Movilidad tobillo<br>
+        Cadera (frontal + rotación)<br>
+        Tronco (rotación)<br>
+        Integración global
+      </div>
+    </div>
+    <div class="dia-card">
+      <div class="dia-num">V</div>
+      <div class="dia-label">Día 3 — Viernes</div>
+      <div class="dia-list">
+        Repaso tobillo<br>
+        Cadena posterior<br>
+        Cadera (rotación interna)<br>
+        Tronco + respiración
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOQUE 1: TOBILLO -->
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">TOBILLO</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="ejercicios-doc">
+
+    <div class="tarjeta" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div>
+          <div class="nombre">Dorsiflexión de tobillo en pared (Knee-to-Wall)</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">10 reps cada lado</span>
+            <span class="badge b-o">45 seg descanso</span>
+            <span class="badge b-g">Movilidad activa</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">De pie frente a una pared, coloca el pie a unos 10–15 cm de distancia. Flexiona la rodilla intentando tocar la pared con la rótula sin despegar el talón del suelo. Aumenta progresivamente la distancia del pie a la pared conforme mejore el rango. Trabaja ambos lados de forma alternada.</p>
+        <p class="consejo">💡 Es el test más directo de dorsiflexión. Si la rodilla no alcanza la pared a 10 cm, hay restricción significativa — común en futbolistas que pasan mucho tiempo de puntillas o con calzado con tacón elevado.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div>
+          <div class="nombre">Círculos de tobillo en descarga (sedestación)</div>
+          <div class="badges">
+            <span class="badge b-y">2 series</span>
+            <span class="badge b-c">10 círculos c/sentido · c/lado</span>
+            <span class="badge b-o">30 seg descanso</span>
+            <span class="badge b-g">Movilidad articular</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">Sentado con la pierna elevada, traza círculos amplios con el pie, buscando el máximo rango en todas las direcciones: flexión dorsal, flexión plantar, inversión y eversión. Realiza 10 repeticiones en sentido horario y 10 en antihorario por cada pie.</p>
+        <p class="consejo">⚠ Evita compensar con el movimiento de la rodilla o el muslo. El movimiento debe originarse exclusivamente en la articulación del tobillo.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div>
+          <div class="nombre">Sentadilla con talones elevados (Goblet Squat)</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">8 reps · 3 seg bajada</span>
+            <span class="badge b-o">60 seg descanso</span>
+            <span class="badge b-g">Movilidad funcional</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">Coloca un disco o cuña bajo los talones (1–3 cm de elevación). Agarra un peso ligero frente al pecho o cruza los brazos. Desciende lentamente en sentadilla profunda manteniendo el torso erguido. La elevación de talones compensa temporalmente la restricción de dorsiflexión mientras se trabaja el rango de manera funcional.</p>
+        <p class="consejo">💡 El objetivo a largo plazo es reducir progresivamente la elevación de los talones hasta poder realizar la sentadilla sin ninguna compensación.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BLOQUE 2: RODILLA -->
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">RODILLA</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="ejercicios-doc">
+
+    <div class="tarjeta zona-rodilla" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div>
+          <div class="nombre">Flexión activa de rodilla en decúbito prono</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">12 reps cada lado</span>
+            <span class="badge b-o">45 seg descanso</span>
+            <span class="badge b-g">ROM activo</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">Tumbado boca abajo con las piernas extendidas, flexiona lentamente la rodilla llevando el talón hacia el glúteo sin ayuda externa. Aguanta 2 segundos en el punto de máximo rango y desciende de forma controlada. Este ejercicio trabaja la musculatura isquiosural de forma excéntrica y mejora el rango de flexión activo de la articulación.</p>
+        <p class="consejo">⚠ No fuerces el rango con la mano en las primeras semanas. El límite articular activo debe ganarse de forma gradual para evitar sobrecargar la cápsula articular posterior.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta zona-rodilla" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div>
+          <div class="nombre">Estiramiento cuádriceps de pie con apoyo</div>
+          <div class="badges">
+            <span class="badge b-y">2 series</span>
+            <span class="badge b-c">40 seg cada lado</span>
+            <span class="badge b-o">30 seg descanso</span>
+            <span class="badge b-g">Estiramiento pasivo</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">De pie con apoyo en pared, agarra el tobillo de la pierna a trabajar llevando el talón hacia el glúteo. Mantén las rodillas juntas y el tronco erguido. Empuja suavemente la cadera hacia adelante para aumentar la tensión en el cuádriceps. Respira con normalidad durante los 40 segundos.</p>
+        <p class="consejo">💡 En fútbol sala, el cuádriceps está sometido a alta tensión por los cambios de dirección y frenos bruscos. Un cuádriceps corto limita directamente la flexión de rodilla.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta zona-rodilla" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div>
+          <div class="nombre">Lunge con rodilla al suelo y oscilación (World's Greatest — parcial)</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">6 reps cada lado</span>
+            <span class="badge b-o">60 seg descanso</span>
+            <span class="badge b-g">Movilidad funcional</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">Desde una posición de zancada larga con la rodilla posterior apoyada en el suelo, desplaza el peso hacia adelante para aumentar la carga sobre la rodilla delantera. La rodilla frontal puede sobrepasar la punta del pie de forma controlada. Realiza pequeñas oscilaciones hacia adelante para ganar rango de forma progresiva. Trabaja la dorsiflexión de tobillo y la flexión de rodilla simultáneamente.</p>
+        <p class="consejo">⚠ Coloca una esterilla o toalla bajo la rodilla posterior para mayor comodidad y evitar irritación rotuliana.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BLOQUE 3: CADERA -->
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">CADERA</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="ejercicios-doc">
+
+    <div class="tarjeta zona-cadera" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div>
+          <div class="nombre">Hip 90/90 (Sentado en posición 90-90)</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">60 seg por posición</span>
+            <span class="badge b-o">30 seg descanso</span>
+            <span class="badge b-g">Rotación interna + externa</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">Siéntate en el suelo con ambas rodillas flexionadas a 90°: una pierna adelantada (rotación externa) y otra retrasada (rotación interna). Mantén el torso erguido y sin inclinar el tronco. Permanece 60 segundos en cada posición, luego cambia el lado. Es uno de los ejercicios más completos para trabajar simultáneamente la rotación interna y externa de cadera.</p>
+        <p class="consejo">⚠ Si sientes dolor en la ingle o en la articulación sacroilíaca, reduce el ángulo de flexión de cadera. La posición correcta es de tensión tolerable, nunca de dolor.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta zona-cadera" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div>
+          <div class="nombre">Hip Flexor Stretch con rotación de tronco (Lunge + Twist)</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">8 reps cada lado</span>
+            <span class="badge b-o">45 seg descanso</span>
+            <span class="badge b-g">Cadena anterior</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">Desde una posición de zancada con rodilla posterior en el suelo, empuja la cadera hacia adelante para elongar el hip flexor. Desde esa posición, rota el tronco hacia el lado de la pierna delantera llevando el brazo hacia arriba. Mantén 2 segundos y regresa. Este ejercicio combina extensión de cadera con movilidad torácica.</p>
+        <p class="consejo">💡 El psoas-ilíaco está frecuentemente acortado en futbolistas por el gesto repetitivo de patada y sprint. Este ejercicio es prioritario en la sesión.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta zona-cadera" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div>
+          <div class="nombre">Apertura lateral de cadera en cuadrupedia (Fire Hydrant)</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">12 reps cada lado</span>
+            <span class="badge b-o">45 seg descanso</span>
+            <span class="badge b-g">Abducción + Rotación ext.</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">En posición de cuadrupedia (manos y rodillas), eleva lateralmente una pierna manteniendo la rodilla a 90°. Lleva la rodilla lo más alto posible sin rotar el tronco ni perder la posición neutra de columna. Realiza el movimiento de forma lenta y controlada. Trabaja la abducción y rotación externa de cadera.</p>
+        <p class="consejo">⚠ No permitas que el tronco se incline hacia el lado contrario como compensación. Si ocurre, reduce el rango hasta que el control motor mejore.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta zona-cadera" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div>
+          <div class="nombre">Sentadilla profunda asistida con agarre (Goblet Squat Hold)</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">60 seg aguantado</span>
+            <span class="badge b-o">60 seg descanso</span>
+            <span class="badge b-g">Movilidad global</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">Agárrate a un poste o marco de puerta y desciende hasta la posición de sentadilla profunda con los pies a la anchura de los hombros y ligeramente rotados hacia afuera. Mantén el torso erguido y empuja suavemente las rodillas hacia fuera con los codos. Permanece en la posición durante 60 segundos respirando de forma relajada.</p>
+        <p class="consejo">💡 En Asia y América Latina esta posición es cotidiana. En poblaciones occidentales con trabajo sedentario o deportes de alta intensidad como el fútbol sala, es una de las posiciones de movilidad más limitadas y más beneficiosas.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BLOQUE 4: TRONCO -->
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">TRONCO</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="ejercicios-doc">
+
+    <div class="tarjeta zona-tronco" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div>
+          <div class="nombre">Rotación torácica en cuadrupedia (Thoracic Rotation)</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">10 reps cada lado</span>
+            <span class="badge b-o">45 seg descanso</span>
+            <span class="badge b-p">Columna torácica</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">En cuadrupedia, coloca una mano detrás de la cabeza. Rota el tronco hacia ese mismo lado llevando el codo hacia el techo. Mantén las caderas quietas y no dejes que roten con el movimiento. Regresa lentamente. La restricción torácica es muy común en futbolistas y limita tanto el gesto de chut como los cambios de dirección.</p>
+        <p class="consejo">💡 Fija la mirada en el codo que sube para guiar el movimiento y maximizar la activación de los rotadores torácicos profundos.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta zona-tronco" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div>
+          <div class="nombre">Cat-Cow (Flexión y extensión de columna)</div>
+          <div class="badges">
+            <span class="badge b-y">2 series</span>
+            <span class="badge b-c">10 reps lentas</span>
+            <span class="badge b-o">30 seg descanso</span>
+            <span class="badge b-p">Columna global</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">En cuadrupedia, alterna entre flexión completa de columna (espalda arqueada hacia arriba, barbilla al pecho) y extensión completa (vientre hacia el suelo, mirada al frente). Cada repetición debe durar 4–5 segundos, respirando de forma coordinada: exhala en la flexión, inhala en la extensión. Trabaja toda la cadena posterior y anterior del tronco.</p>
+        <p class="consejo">💡 Presta especial atención a la zona dorsal: muchos jugadores solo mueven la zona lumbar y cervical, dejando la zona torácica media completamente bloqueada.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta zona-tronco" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div>
+          <div class="nombre">Twist espinal en decúbito supino (Supine Spinal Twist)</div>
+          <div class="badges">
+            <span class="badge b-y">2 series</span>
+            <span class="badge b-c">45 seg cada lado</span>
+            <span class="badge b-o">30 seg descanso</span>
+            <span class="badge b-p">Rotación + cadena post.</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">Tumbado boca arriba, flexiona una rodilla y llévala hacia el lado contrario del cuerpo mientras los hombros permanecen pegados al suelo. Extiende el brazo del lado de la pierna hacia fuera y mira en esa dirección. Respira profundamente, usando cada exhalación para relajar y ganar unos milímetros más de rotación. Mantén durante 45 segundos por lado.</p>
+        <p class="consejo">⚠ Si notas molestia en la zona lumbar (no tensión muscular), retira la posición. Este ejercicio trabaja desde la columna torácica baja, no desde la lumbar.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta zona-tronco" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div>
+          <div class="nombre">Flexión lateral de tronco de pie (Side Reach)</div>
+          <div class="badges">
+            <span class="badge b-y">2 series</span>
+            <span class="badge b-c">8 reps cada lado</span>
+            <span class="badge b-o">30 seg descanso</span>
+            <span class="badge b-p">Flexión lateral</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">De pie con los pies a la anchura de los hombros, eleva un brazo por encima de la cabeza y flexiona el tronco lateralmente hacia el lado contrario. Desliza la mano libre hacia abajo por el lateral del muslo para guiar el movimiento. Mantén 3 segundos en el punto de máximo rango y regresa de forma controlada. Alterna lados.</p>
+        <p class="consejo">💡 No permitas que la cadera se desplace hacia el lado del brazo elevado como compensación. El movimiento debe originarse en la columna lateral, no en el desplazamiento de pelvis.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SECCIÓN INTEGRACIÓN GLOBAL -->
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">INTEGRACIÓN GLOBAL</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="ejercicios-doc">
+
+    <div class="tarjeta" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div>
+          <div class="nombre">World's Greatest Stretch (Completo)</div>
+          <div class="badges">
+            <span class="badge b-y">2 series</span>
+            <span class="badge b-c">5 reps cada lado</span>
+            <span class="badge b-o">60 seg descanso</span>
+            <span class="badge b-g">Full-body movilidad</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">Desde bipedestación, da un paso largo hacia adelante (zancada). Coloca la mano del mismo lado que la pierna delantera junto al pie. Desde ahí, rota el tronco llevando el brazo interior hacia el techo. Vuelve al centro, empuja la cadera hacia atrás para estirar isquiosurales y regresa a la posición de pie. Este ejercicio encadena tobillo, rodilla, cadera y tronco en un solo movimiento.</p>
+        <p class="consejo">💡 Es el ejercicio de activación y movilidad global más estudiado y utilizado en el deporte de alto rendimiento. Úsalo al inicio de cada sesión como activación dinámica o al final como integración de todo el trabajo.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <doc-footer>TSEAS · Acondicionamiento Físico Deportivo · 2025 — Programa de Movilidad para Fútbol Sala</doc-footer>
+
+</div>
+
+<script>
+  // Las tarjetas ya tienen onclick inline. No se necesita JS adicional.
+  // El toggle de clase 'open' controla la visibilidad del detalle y la rotación del icono.
+</script>
+
+</body>
+</html>
