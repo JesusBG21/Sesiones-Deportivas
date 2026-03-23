@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programa de Movilidad Adaptada — Rotura Isquiotibial G2</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --card: #1a1e28;
+    --accent: #e8ff3c;
+    --accent2: #3cffe8;
+    --accent3: #ff6b3c;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --border: #2a2f3d;
+    --danger: #ff4d4d;
+    --safe: #4dff91;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(232,255,60,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,255,60,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+    position: relative; z-index: 1;
+  }
+
+  /* HEADER */
+  .tag { display: inline-block; background: var(--accent); color: #0d0f14; font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; padding: 4px 12px; margin-bottom: 16px; }
+  .tag-danger { display: inline-block; background: var(--danger); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; padding: 4px 12px; margin-bottom: 16px; margin-left: 8px; }
+  h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(44px, 8vw, 88px); line-height: 0.9; letter-spacing: 2px; margin-bottom: 14px; }
+  h1 span { color: var(--accent); }
+  h1 span.red { color: var(--danger); }
+  .subtitle { color: var(--muted); font-size: 14px; line-height: 1.7; max-width: 560px; margin-bottom: 32px; }
+
+  header { border-bottom: 1px solid var(--border); padding-bottom: 32px; margin-bottom: 32px; }
+
+  /* ALERTA LESIÓN */
+  .alerta-lesion {
+    background: rgba(255,77,77,0.07);
+    border: 1px solid rgba(255,77,77,0.3);
+    border-left: 3px solid var(--danger);
+    padding: 18px 20px;
+    margin-bottom: 20px;
+  }
+  .alerta-lesion .alerta-title { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--danger); margin-bottom: 8px; }
+  .alerta-lesion p { font-size: 13px; color: #9ca3af; line-height: 1.7; }
+  .alerta-lesion strong { color: var(--danger); }
+
+  /* NOTA */
+  .nota { background: rgba(232,255,60,0.06); border: 1px solid rgba(232,255,60,0.2); border-left: 3px solid var(--accent); padding: 14px 18px; margin-bottom: 32px; }
+  .nota p { font-size: 13px; color: #9ca3af; line-height: 1.7; }
+  .nota strong { color: var(--accent); }
+
+  /* INFO CHIPS */
+  .info-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; }
+  .chip { display: flex; align-items: center; gap: 6px; background: var(--card); border: 1px solid var(--border); padding: 7px 14px; font-size: 12px; font-weight: 500; }
+  .chip-label { color: var(--muted); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+  .chip-val { color: var(--text); font-weight: 600; }
+  .chip-danger { border-color: rgba(255,77,77,0.4); }
+  .chip-danger .chip-val { color: var(--danger); }
+
+  /* LEYENDA SEMÁFORO */
+  .semaforo { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 32px; }
+  .sem-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+  .sem-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .sem-verde { background: #4dff91; }
+  .sem-amarillo { background: #e8ff3c; }
+  .sem-rojo { background: #ff4d4d; }
+
+  /* SECTION HEADER */
+  .section-header { display: flex; align-items: center; gap: 16px; margin: 40px 0 20px; }
+  .section-num { font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 3px; color: var(--muted); }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px; color: var(--accent); white-space: nowrap; }
+  .section-line { flex: 1; height: 1px; background: var(--border); }
+
+  /* TARJETA EJERCICIO */
+  .ejercicios-doc { display: flex; flex-direction: column; gap: 12px; }
+
+  .tarjeta {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 20px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .tarjeta:hover { transform: translateX(4px); background: rgba(232,255,60,0.04); }
+  .tarjeta.zona-rodilla { border-left-color: var(--accent2); }
+  .tarjeta.zona-cadera { border-left-color: var(--accent3); }
+  .tarjeta.zona-tronco { border-left-color: #a78bfa; }
+  .tarjeta.eliminado { border-left-color: var(--danger); opacity: 0.6; cursor: not-allowed; }
+  .tarjeta.eliminado:hover { transform: none; background: rgba(255,77,77,0.04); }
+
+  /* Badge de estado */
+  .estado-badge {
+    position: absolute;
+    top: 16px;
+    right: 48px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+  .estado-seguro { background: rgba(77,255,145,0.12); color: #4dff91; }
+  .estado-eliminado { background: rgba(255,77,77,0.15); color: var(--danger); }
+  .estado-modificado { background: rgba(232,255,60,0.12); color: var(--accent); }
+
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  .nombre { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; }
+  .b-y { background: rgba(232,255,60,0.12); color: var(--accent); }
+  .b-c { background: rgba(60,255,232,0.12); color: var(--accent2); }
+  .b-o { background: rgba(255,107,60,0.12); color: var(--accent3); }
+  .b-g { background: rgba(255,255,255,0.06); color: var(--muted); }
+  .b-p { background: rgba(167,139,250,0.12); color: #a78bfa; }
+  .b-r { background: rgba(255,77,77,0.12); color: var(--danger); }
+
+  .icono { font-size: 18px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; margin-top: 2px; }
+  .tarjeta.open .icono { transform: rotate(180deg); }
+  .tarjeta.eliminado .icono { display: none; }
+
+  .detalle { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .tarjeta.open .detalle { display: block; }
+  .tarjeta.eliminado .detalle { display: block; margin-top: 12px; }
+  .desc { font-size: 13px; color: #9ca3af; line-height: 1.8; }
+  .consejo { font-size: 12px; color: var(--muted); font-style: italic; padding-left: 12px; border-left: 2px solid var(--border); margin-top: 10px; }
+  .razon-eliminado { font-size: 12px; color: var(--danger); padding-left: 12px; border-left: 2px solid rgba(255,77,77,0.4); margin-top: 10px; line-height: 1.6; }
+  .cuando-vuelve { font-size: 11px; color: var(--muted); margin-top: 6px; padding-left: 12px; font-style: italic; }
+
+  /* DÍAS */
+  .dias-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 8px; }
+  @media (max-width: 600px) { .dias-grid { grid-template-columns: 1fr; } }
+  .dia-card { background: var(--card); border: 1px solid var(--border); padding: 16px 20px; }
+  .dia-num { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--accent); line-height: 1; }
+  .dia-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .dia-list { font-size: 12px; color: #9ca3af; line-height: 2; }
+  .dia-list .tachado { text-decoration: line-through; color: rgba(255,77,77,0.5); }
+
+  /* FOOTER */
+  doc-footer { display: block; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--border); text-align: center; font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header>
+    <div>
+      <div class="tag">TSEAS · Acondicionamiento Físico Deportivo</div>
+      <div class="tag-danger">⚠ Adaptado — Rotura Isquiotibial G2</div>
+    </div>
+    <h1>PROGRAMA DE<br><span>MOVILIDAD</span> <span class="red">ADAPTADA</span></h1>
+    <p class="subtitle">Versión modificada del programa original, adaptada a la fase aguda-subaguda de rotura muscular de isquiotibial grado 2 (semana 1–2). Se eliminan o modifican todos los ejercicios que impliquen tensión directa o indirecta sobre la musculatura isquiosural.</p>
+
+    <div class="info-row">
+      <div class="chip"><span class="chip-label">Cliente</span><span class="chip-val">Varón · 19 años</span></div>
+      <div class="chip chip-danger"><span class="chip-label">Lesión</span><span class="chip-val">Rotura Isquiotibial G2</span></div>
+      <div class="chip chip-danger"><span class="chip-label">Fase</span><span class="chip-val">Semana 1–2 (aguda)</span></div>
+      <div class="chip"><span class="chip-label">Frecuencia</span><span class="chip-val">3 días / semana</span></div>
+      <div class="chip"><span class="chip-label">Duración sesión</span><span class="chip-val">~20–25 min</span></div>
+    </div>
+  </header>
+
+  <!-- ALERTA LESIÓN -->
+  <div class="alerta-lesion">
+    <div class="alerta-title">⚠ Protocolo de lesión activa</div>
+    <p>Con una rotura de isquiotibial grado 2 en fase aguda, <strong>NO se deben realizar ejercicios que pongan tensión en los isquiotibiales</strong>, ni contracciones activas ni estiramientos de la musculatura posterior del muslo. Los ejercicios marcados en rojo han sido eliminados temporalmente. Consulta con un fisioterapeuta para obtener un protocolo de recuperación progresiva.</p>
+  </div>
+
+  <!-- LEYENDA -->
+  <div class="semaforo">
+    <div class="sem-item"><div class="sem-dot sem-verde"></div>Seguro — puedes hacerlo ahora</div>
+    <div class="sem-item"><div class="sem-dot sem-amarillo"></div>Modificado — versión adaptada</div>
+    <div class="sem-item"><div class="sem-dot sem-rojo"></div>Eliminado — riesgo de reagravación</div>
+  </div>
+
+  <!-- NOTA -->
+  <div class="nota">
+    <p><strong>Aviso:</strong> Las sensaciones deben ser de tensión tolerable, nunca de dolor. Ante cualquier molestia en la zona posterior del muslo, detén el ejercicio inmediatamente. Este programa no sustituye el protocolo de un fisioterapeuta.</p>
+  </div>
+
+  <!-- PLANIFICACIÓN SEMANAL -->
+  <div class="section-header">
+    <span class="section-num">00</span>
+    <h2 class="section-title">DISTRIBUCIÓN SEMANAL</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="dias-grid">
+    <div class="dia-card">
+      <div class="dia-num">L</div>
+      <div class="dia-label">Día 1 — Lunes</div>
+      <div class="dia-list">
+        Movilidad tobillo<br>
+        Círculos tobillo<br>
+        <span class="tachado">Goblet Squat</span><br>
+        Cadera 90/90<br>
+        Cat-Cow
+      </div>
+    </div>
+    <div class="dia-card">
+      <div class="dia-num">X</div>
+      <div class="dia-label">Día 2 — Miércoles</div>
+      <div class="dia-list">
+        Movilidad tobillo<br>
+        Fire Hydrant<br>
+        Rotación torácica<br>
+        Twist supino<br>
+        Flexión lateral
+      </div>
+    </div>
+    <div class="dia-card">
+      <div class="dia-num">V</div>
+      <div class="dia-label">Día 3 — Viernes</div>
+      <div class="dia-list">
+        Tobillo completo<br>
+        Cadera 90/90<br>
+        Fire Hydrant<br>
+        Cat-Cow<br>
+        Rotación torácica
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOQUE 1: TOBILLO -->
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">TOBILLO</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="ejercicios-doc">
+
+    <div class="tarjeta" onclick="this.classList.toggle('open')">
+      <span class="estado-badge estado-seguro">✓ Seguro</span>
+      <div class="card-top">
+        <div>
+          <div class="nombre">Dorsiflexión de tobillo en pared (Knee-to-Wall)</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">10 reps cada lado</span>
+            <span class="badge b-o">45 seg descanso</span>
+            <span class="badge b-g">Movilidad activa</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">De pie frente a una pared, coloca el pie a unos 10–15 cm de distancia. Flexiona la rodilla intentando tocar la pared con la rótula sin despegar el talón del suelo. Aumenta progresivamente la distancia del pie a la pared conforme mejore el rango. Trabaja ambos lados de forma alternada.</p>
+        <p class="consejo">💡 Sin riesgo para los isquiotibiales. Movimiento aislado de tobillo con apoyo en pared. Ideal para esta fase.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta" onclick="this.classList.toggle('open')">
+      <span class="estado-badge estado-seguro">✓ Seguro</span>
+      <div class="card-top">
+        <div>
+          <div class="nombre">Círculos de tobillo en descarga (sedestación)</div>
+          <div class="badges">
+            <span class="badge b-y">2 series</span>
+            <span class="badge b-c">10 círculos c/sentido · c/lado</span>
+            <span class="badge b-o">30 seg descanso</span>
+            <span class="badge b-g">Movilidad articular</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">Sentado con la pierna elevada, traza círculos amplios con el pie, buscando el máximo rango en todas las direcciones. Realiza 10 repeticiones en sentido horario y 10 en antihorario por cada pie.</p>
+        <p class="consejo">⚠ Movimiento 100% en descarga. Sin ninguna tensión sobre la cadena posterior. Perfectamente seguro en fase aguda.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta eliminado">
+      <span class="estado-badge estado-eliminado">✗ Eliminado</span>
+      <div class="card-top">
+        <div>
+          <div class="nombre">Sentadilla con talones elevados (Goblet Squat)</div>
+          <div class="badges">
+            <span class="badge b-r">Eliminado temporalmente</span>
+            <span class="badge b-g">Semana 3–4</span>
+          </div>
+        </div>
+      </div>
+      <div class="detalle">
+        <p class="razon-eliminado">❌ Aunque es movilidad de tobillo, la sentadilla profunda activa los isquiotibiales de forma excéntrica y somete la zona lesionada a carga axial. En semana 1–2 de rotura G2 existe riesgo real de reagravación.</p>
+        <p class="cuando-vuelve">→ Reintroducir en semana 3–4, con supervisión de fisioterapeuta y sin dolor previo en la zona.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BLOQUE 2: RODILLA -->
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">RODILLA</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="ejercicios-doc">
+
+    <div class="tarjeta zona-rodilla eliminado">
+      <span class="estado-badge estado-eliminado">✗ Eliminado</span>
+      <div class="card-top">
+        <div>
+          <div class="nombre">Flexión activa de rodilla en decúbito prono</div>
+          <div class="badges">
+            <span class="badge b-r">Eliminado temporalmente</span>
+            <span class="badge b-g">Semana 3–4</span>
+          </div>
+        </div>
+      </div>
+      <div class="detalle">
+        <p class="razon-eliminado">❌ Contracción directa e isométrica de los isquiotibiales lesionados. Es exactamente el grupo muscular afectado. Realizarlo ahora puede reabrir la rotura y alargar la recuperación semanas.</p>
+        <p class="cuando-vuelve">→ Es clave en la readaptación pero solo cuando el fisio lo indique, progresando desde isométrico suave a excéntrico.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta zona-rodilla" onclick="this.classList.toggle('open')">
+      <span class="estado-badge estado-seguro">✓ Seguro</span>
+      <div class="card-top">
+        <div>
+          <div class="nombre">Estiramiento cuádriceps de pie con apoyo</div>
+          <div class="badges">
+            <span class="badge b-y">2 series</span>
+            <span class="badge b-c">40 seg cada lado</span>
+            <span class="badge b-o">30 seg descanso</span>
+            <span class="badge b-g">Estiramiento pasivo</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">De pie con apoyo en pared, agarra el tobillo llevando el talón hacia el glúteo. Mantén las rodillas juntas y el tronco erguido. Empuja suavemente la cadera hacia adelante. Respira con normalidad durante los 40 segundos.</p>
+        <p class="consejo">💡 Trabaja exclusivamente el cuádriceps y el hip flexor. Sin tensión sobre la cadena posterior. Seguro en esta fase.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta zona-rodilla eliminado">
+      <span class="estado-badge estado-eliminado">✗ Eliminado</span>
+      <div class="card-top">
+        <div>
+          <div class="nombre">Lunge con rodilla al suelo y oscilación (World's Greatest — parcial)</div>
+          <div class="badges">
+            <span class="badge b-r">Eliminado temporalmente</span>
+            <span class="badge b-g">Semana 4–6</span>
+          </div>
+        </div>
+      </div>
+      <div class="detalle">
+        <p class="razon-eliminado">❌ La posición de zancada larga genera tensión en los isquiotibiales de la pierna trasera, especialmente en las oscilaciones hacia adelante. Existe riesgo directo sobre la zona lesionada.</p>
+        <p class="cuando-vuelve">→ Reintroducir en semana 4–6 sin oscilaciones, primero como posición estática y luego de forma dinámica.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BLOQUE 3: CADERA -->
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">CADERA</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="ejercicios-doc">
+
+    <div class="tarjeta zona-cadera" onclick="this.classList.toggle('open')">
+      <span class="estado-badge estado-seguro">✓ Seguro</span>
+      <div class="card-top">
+        <div>
+          <div class="nombre">Hip 90/90 (Sentado en posición 90-90)</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">60 seg por posición</span>
+            <span class="badge b-o">30 seg descanso</span>
+            <span class="badge b-g">Rotación interna + externa</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">Siéntate en el suelo con ambas rodillas flexionadas a 90°: una pierna adelantada (rotación externa) y otra retrasada (rotación interna). Mantén el torso erguido y sin inclinar el tronco. Permanece 60 segundos en cada posición, luego cambia el lado.</p>
+        <p class="consejo">⚠ Mantente en posición estrictamente sentada, sin inclinarte hacia adelante. Si el tronco se inclina, los isquiotibiales entran en tensión. El movimiento es solo de cadera y rodilla, el tronco permanece neutro.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta zona-cadera eliminado">
+      <span class="estado-badge estado-eliminado">✗ Eliminado</span>
+      <div class="card-top">
+        <div>
+          <div class="nombre">Hip Flexor Stretch con rotación de tronco (Lunge + Twist)</div>
+          <div class="badges">
+            <span class="badge b-r">Eliminado temporalmente</span>
+            <span class="badge b-g">Semana 4–6</span>
+          </div>
+        </div>
+      </div>
+      <div class="detalle">
+        <p class="razon-eliminado">❌ La posición de zancada con rodilla posterior en el suelo estira directamente los isquiotibiales de la pierna trasera. Combinado con la rotación, genera tensión adicional sobre la cadena posterior. Alto riesgo en fase aguda.</p>
+        <p class="cuando-vuelve">→ Reintroducir cuando el fisio autorice la carga excéntrica progresiva en isquiotibiales.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta zona-cadera" onclick="this.classList.toggle('open')">
+      <span class="estado-badge estado-seguro">✓ Seguro</span>
+      <div class="card-top">
+        <div>
+          <div class="nombre">Apertura lateral de cadera en cuadrupedia (Fire Hydrant)</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">12 reps cada lado</span>
+            <span class="badge b-o">45 seg descanso</span>
+            <span class="badge b-g">Abducción + Rotación ext.</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">En posición de cuadrupedia, eleva lateralmente una pierna manteniendo la rodilla a 90°. Lleva la rodilla lo más alto posible sin rotar el tronco ni perder la posición neutra de columna. Realiza el movimiento de forma lenta y controlada.</p>
+        <p class="consejo">💡 Movimiento de abducción pura. Los isquiotibiales no intervienen activamente en este patrón. Seguro en todas las fases de recuperación.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta zona-cadera eliminado">
+      <span class="estado-badge estado-eliminado">✗ Eliminado</span>
+      <div class="card-top">
+        <div>
+          <div class="nombre">Sentadilla profunda asistida con agarre (Goblet Squat Hold)</div>
+          <div class="badges">
+            <span class="badge b-r">Eliminado temporalmente</span>
+            <span class="badge b-g">Semana 3–4</span>
+          </div>
+        </div>
+      </div>
+      <div class="detalle">
+        <p class="razon-eliminado">❌ La sentadilla profunda en carga activa los isquiotibiales de forma excéntrica y genera tensión en toda la cadena posterior. En fase aguda de rotura G2 existe riesgo de reagravación.</p>
+        <p class="cuando-vuelve">→ Reintroducir con supervisión fisio cuando no haya dolor en movimientos funcionales básicos.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BLOQUE 4: TRONCO -->
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">TRONCO</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="ejercicios-doc">
+
+    <div class="tarjeta zona-tronco" onclick="this.classList.toggle('open')">
+      <span class="estado-badge estado-seguro">✓ Seguro</span>
+      <div class="card-top">
+        <div>
+          <div class="nombre">Rotación torácica en cuadrupedia (Thoracic Rotation)</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">10 reps cada lado</span>
+            <span class="badge b-o">45 seg descanso</span>
+            <span class="badge b-p">Columna torácica</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">En cuadrupedia, coloca una mano detrás de la cabeza. Rota el tronco hacia ese mismo lado llevando el codo hacia el techo. Mantén las caderas quietas y no dejes que roten con el movimiento. Regresa lentamente.</p>
+        <p class="consejo">💡 Movimiento completamente aislado en la columna torácica. Sin ninguna implicación de la cadena posterior del muslo. Ideal y seguro en esta fase.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta zona-tronco" onclick="this.classList.toggle('open')">
+      <span class="estado-badge estado-seguro">✓ Seguro</span>
+      <div class="card-top">
+        <div>
+          <div class="nombre">Cat-Cow (Flexión y extensión de columna)</div>
+          <div class="badges">
+            <span class="badge b-y">2 series</span>
+            <span class="badge b-c">10 reps lentas</span>
+            <span class="badge b-o">30 seg descanso</span>
+            <span class="badge b-p">Columna global</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">En cuadrupedia, alterna entre flexión completa de columna (espalda arqueada hacia arriba, barbilla al pecho) y extensión completa (vientre hacia el suelo, mirada al frente). Cada repetición debe durar 4–5 segundos. Exhala en la flexión, inhala en la extensión.</p>
+        <p class="consejo">⚠ Evita hundir la zona lumbar de forma exagerada en la fase de extensión. El movimiento debe repartirse por toda la columna de forma progresiva.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta zona-tronco" onclick="this.classList.toggle('open')">
+      <span class="estado-badge estado-seguro">✓ Seguro</span>
+      <div class="card-top">
+        <div>
+          <div class="nombre">Twist espinal en decúbito supino (Supine Spinal Twist)</div>
+          <div class="badges">
+            <span class="badge b-y">2 series</span>
+            <span class="badge b-c">45 seg cada lado</span>
+            <span class="badge b-o">30 seg descanso</span>
+            <span class="badge b-p">Rotación + columna</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">Tumbado boca arriba, flexiona una rodilla y llévala hacia el lado contrario del cuerpo mientras los hombros permanecen pegados al suelo. Extiende el brazo del lado de la pierna hacia fuera y mira en esa dirección. Respira profundamente, usando cada exhalación para relajar y ganar rango. Mantén 45 segundos por lado.</p>
+        <p class="consejo">⚠ Si notas tensión en la parte posterior del muslo (no la zona lumbar), ajusta el ángulo de flexión de rodilla. El objetivo es la rotación torácica, no estirar los isquiotibiales.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta zona-tronco" onclick="this.classList.toggle('open')">
+      <span class="estado-badge estado-seguro">✓ Seguro</span>
+      <div class="card-top">
+        <div>
+          <div class="nombre">Flexión lateral de tronco de pie (Side Reach)</div>
+          <div class="badges">
+            <span class="badge b-y">2 series</span>
+            <span class="badge b-c">8 reps cada lado</span>
+            <span class="badge b-o">30 seg descanso</span>
+            <span class="badge b-p">Flexión lateral</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <p class="desc">De pie con los pies a la anchura de los hombros, eleva un brazo por encima de la cabeza y flexiona el tronco lateralmente hacia el lado contrario. Desliza la mano libre hacia abajo por el lateral del muslo. Mantén 3 segundos en el punto de máximo rango y regresa de forma controlada. Alterna lados.</p>
+        <p class="consejo">💡 Movimiento de flexión lateral pura. Sin implicación de los isquiotibiales. Completamente seguro.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BLOQUE 5: INTEGRACIÓN -->
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">INTEGRACIÓN GLOBAL</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="ejercicios-doc">
+
+    <div class="tarjeta eliminado">
+      <span class="estado-badge estado-eliminado">✗ Eliminado</span>
+      <div class="card-top">
+        <div>
+          <div class="nombre">World's Greatest Stretch (Completo)</div>
+          <div class="badges">
+            <span class="badge b-r">Eliminado temporalmente</span>
+            <span class="badge b-g">Semana 6+</span>
+          </div>
+        </div>
+      </div>
+      <div class="detalle">
+        <p class="razon-eliminado">❌ El WGS en su versión completa incluye el empuje de cadera hacia atrás para estirar isquiosurales, que es exactamente la zona lesionada. Incluso en la versión parcial, la posición de zancada genera tensión posterior. Es el ejercicio de mayor riesgo del programa en esta fase.</p>
+        <p class="cuando-vuelve">→ Reintroducir cuando el protocolo de readaptación esté avanzado, probablemente semana 6 o posterior. Primero solo la parte de rotación torácica, luego el movimiento completo.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <doc-footer>TSEAS · Acondicionamiento Físico Deportivo · 2025 — Programa de Movilidad Adaptada · Rotura Isquiotibial G2 · Semana 1–2</doc-footer>
+
+</div>
+</body>
+</html>
