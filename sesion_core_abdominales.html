@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión Core — TSEAS</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --card: #1a1e28;
+    --accent: #e8ff3c;
+    --accent2: #3cffe8;
+    --accent3: #ff6b3c;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --border: #2a2f3d;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(232,255,60,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,255,60,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .wrapper {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 52px 24px 80px;
+    position: relative; z-index: 1;
+  }
+
+  header {
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 36px;
+  }
+
+  .tag {
+    display: inline-block;
+    background: var(--accent);
+    color: #0d0f14;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    margin-bottom: 18px;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 8vw, 88px);
+    line-height: 0.88;
+    letter-spacing: 2px;
+    margin-bottom: 18px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    color: #9ca3af;
+    font-size: 14px;
+    line-height: 1.75;
+    max-width: 560px;
+  }
+
+  .nota {
+    background: rgba(232,255,60,0.05);
+    border: 1px solid rgba(232,255,60,0.18);
+    border-left: 3px solid var(--accent);
+    padding: 14px 20px;
+    margin-bottom: 32px;
+    border-radius: 0 2px 2px 0;
+  }
+
+  .nota p { font-size: 13px; color: #9ca3af; line-height: 1.75; }
+  .nota strong { color: var(--accent); }
+
+  .resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 44px;
+  }
+
+  .resumen-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+  }
+
+  .resumen-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .resumen-valor {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--accent);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 0 0 20px;
+  }
+
+  .section-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--muted);
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 2px;
+    color: var(--accent);
+  }
+
+  .section-line { flex: 1; height: 1px; background: var(--border); }
+
+  .ejercicios-lista { display: flex; flex-direction: column; gap: 10px; }
+
+  .tarjeta {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 20px 24px;
+    cursor: pointer;
+    transition: transform 0.18s ease, background 0.18s ease;
+    user-select: none;
+  }
+
+  .tarjeta:nth-child(2) { border-left-color: var(--accent2); }
+  .tarjeta:nth-child(3) { border-left-color: var(--accent3); }
+  .tarjeta:nth-child(4) { border-left-color: var(--accent); }
+  .tarjeta:nth-child(5) { border-left-color: var(--accent2); }
+
+  .tarjeta:hover { transform: translateX(5px); background: rgba(232,255,60,0.04); }
+  .tarjeta:nth-child(2):hover { background: rgba(60,255,232,0.04); }
+  .tarjeta:nth-child(3):hover { background: rgba(255,107,60,0.04); }
+
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  .card-left { flex: 1; }
+
+  .card-orden {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .nombre { font-size: 17px; font-weight: 600; margin-bottom: 10px; color: var(--text); line-height: 1.3; }
+  .badges { display: flex; gap: 7px; flex-wrap: wrap; }
+
+  .badge {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  .b-y { background: rgba(232,255,60,0.12); color: var(--accent); }
+  .b-c { background: rgba(60,255,232,0.12); color: var(--accent2); }
+  .b-o { background: rgba(255,107,60,0.12); color: var(--accent3); }
+  .b-g { background: rgba(255,255,255,0.06); color: var(--muted); }
+
+  .icono {
+    font-size: 16px;
+    color: var(--muted);
+    transition: transform 0.2s ease;
+    padding-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .tarjeta.open .icono { transform: rotate(180deg); }
+
+  .detalle {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.32s ease, opacity 0.28s ease;
+    opacity: 0;
+  }
+
+  .tarjeta.open .detalle { max-height: 600px; opacity: 1; }
+
+  .detalle-inner {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .desc { font-size: 13px; color: #9ca3af; line-height: 1.85; margin-bottom: 12px; }
+
+  .consejo {
+    display: flex;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    padding: 10px 14px;
+    border-left: 2px solid var(--border);
+    background: rgba(255,255,255,0.02);
+    line-height: 1.6;
+  }
+
+  .consejo-icon { font-style: normal; flex-shrink: 0; }
+
+  .orden-bloque { margin-top: 44px; }
+
+  .orden-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+
+  @media (max-width: 560px) { .orden-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .orden-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 14px 12px;
+    text-align: center;
+  }
+
+  .orden-n {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .orden-item:nth-child(2) .orden-n { color: var(--accent2); }
+  .orden-item:nth-child(3) .orden-n { color: var(--accent3); }
+  .orden-item:nth-child(5) .orden-n { color: var(--accent2); }
+
+  .orden-nombre { font-size: 10px; color: var(--muted); letter-spacing: 0.5px; line-height: 1.4; }
+
+  .doc-footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .footer-left { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .footer-right { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+
+  @media print {
+    body::before { display: none; }
+    .detalle { max-height: none !important; opacity: 1 !important; }
+    .detalle-inner { display: block !important; }
+    .icono { display: none; }
+    .tarjeta { transform: none !important; break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <header>
+    <div class="tag">TSEAS · Entrenamiento Deportivo · 2025</div>
+    <h1>SESIÓN<br><span>CORE &amp; FUERZA</span></h1>
+    <p class="subtitle">
+      Sesión estructurada de trabajo abdominal y estabilización del core. El orden respeta la pirámide de fatiga: antirotación → flexión cargada → antiextensión → fuerza máxima → compensación posterior. Apta para niveles intermedios-avanzados con base de acondicionamiento físico.
+    </p>
+  </header>
+
+  <div class="nota">
+    <p><strong>⚠ Aviso importante:</strong> Ejecuta siempre con columna neutra y progresa de forma gradual en carga. Evita este protocolo si presentas dolor lumbar activo o hernias discales no tratadas. Consulta con un profesional de la salud o del ejercicio antes de comenzar si tienes dudas sobre tu estado físico.</p>
+  </div>
+
+  <div class="resumen">
+    <div class="resumen-item">
+      <div class="resumen-label">Ejercicios</div>
+      <div class="resumen-valor">5</div>
+    </div>
+    <div class="resumen-item">
+      <div class="resumen-label">Series totales</div>
+      <div class="resumen-valor">15</div>
+    </div>
+    <div class="resumen-item">
+      <div class="resumen-label">Objetivo</div>
+      <div class="resumen-valor">CORE</div>
+    </div>
+    <div class="resumen-item">
+      <div class="resumen-label">Nivel</div>
+      <div class="resumen-valor">AVANZADO</div>
+    </div>
+    <div class="resumen-item">
+      <div class="resumen-label">Duración est.</div>
+      <div class="resumen-valor">45–55 MIN</div>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">EJERCICIOS</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="ejercicios-lista">
+
+    <div class="tarjeta" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-orden">Ejercicio 01</div>
+          <div class="nombre">Press Pallof en polea</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">10–12 reps/lado</span>
+            <span class="badge b-o">60 seg descanso</span>
+            <span class="badge b-g">Antirotación</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <div class="detalle-inner">
+          <p class="desc">Colócate de lado a la polea, pies separados a la anchura de caderas y rodillas ligeramente flexionadas. Agarra el cable con ambas manos frente al pecho y extiende los brazos al frente aguantando 2 segundos en esa posición; la resistencia intentará rotarte y tú debes evitarlo. Mantén el abdomen braced (como si fuera a recibir un golpe), caderas neutras y hombros estables. Regresa con control. Cambia de lado después de completar las reps.</p>
+          <div class="consejo">
+            <span class="consejo-icon">💡</span>
+            <span>Empieza aquí siempre: la antirotación activa el core profundo sin generar fatiga acumulada, preparando el sistema nervioso y la musculatura estabilizadora para los ejercicios más exigentes que vienen después.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tarjeta" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-orden">Ejercicio 02</div>
+          <div class="nombre">Crunch abdominal en polea</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">12–15 reps</span>
+            <span class="badge b-o">60 seg descanso</span>
+            <span class="badge b-g">Excéntrico 2–3 seg</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <div class="detalle-inner">
+          <p class="desc">Arrodíllado frente a la polea alta, agarra la cuerda de tríceps por ambos lados a la altura de la cabeza. Flexiona el tronco hacia abajo llevando los codos hacia las rodillas, contrayendo el recto abdominal en el punto de máxima flexión. La clave está en la bajada: controla la vuelta a la posición inicial durante 2–3 segundos (fase excéntrica). Usa una carga moderada-alta que permita ejecutar sin perder la técnica. No uses impulso ni balanceo.</p>
+          <div class="consejo">
+            <span class="consejo-icon">⚠</span>
+            <span>No tires con los brazos ni uses el peso corporal para bajar. El movimiento debe venir exclusivamente de la contracción abdominal. Si usas impulso, reduce la carga.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tarjeta" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-orden">Ejercicio 03</div>
+          <div class="nombre">Rueda abdominal (Ab Wheel Rollout)</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">8–10 reps</span>
+            <span class="badge b-o">90 seg descanso</span>
+            <span class="badge b-g">Antiextensión</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <div class="detalle-inner">
+          <p class="desc">De rodillas, agarra la rueda con ambas manos y rueda hacia delante extendiendo los brazos mientras mantienes el core en tensión. La cadera no debe ceder ni hundirse —eso sería señal de hiperlordosis lumbar, que hay que evitar a toda costa. Ve tan lejos como puedas manteniendo la columna en posición neutra y regresa controlando el movimiento. Es preferible un recorrido corto con buena técnica que un rollout completo con la espalda comprometida.</p>
+          <div class="consejo">
+            <span class="consejo-icon">💡</span>
+            <span>Activa los glúteos y aprieta el abdomen antes de empezar a rodar. Si notas tensión en la zona lumbar o las caderas se hundieron, ese es tu límite de hoy. Progresa el rango semana a semana.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tarjeta" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-orden">Ejercicio 04</div>
+          <div class="nombre">Dragon Flags</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">5–8 reps</span>
+            <span class="badge b-o">2 min descanso</span>
+            <span class="badge b-g">Fuerza máxima</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <div class="detalle-inner">
+          <p class="desc">Tumbado en un banco, agarra el respaldo con ambas manos por detrás de la cabeza. Eleva las piernas y el tronco formando una línea recta desde los hombros hasta los pies, apoyando solo los hombros en el banco. Desde esa posición, baja el cuerpo de forma lenta y controlada sin doblar las caderas. La bajada descontrolada —las caderas cediendo primero— anula el ejercicio y puede lesionar. Sube con control o usa el impulso solo como recurso auxiliar al inicio.</p>
+          <div class="consejo">
+            <span class="consejo-icon">⚠</span>
+            <span>Si aún no dominas el ejercicio completo, trabaja primero solo la fase excéntrica (baja muy lento, sube con ayuda) o con piernas flexionadas. Es el ejercicio más demandante de la sesión: la progresión es clave.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tarjeta" onclick="this.classList.toggle('open')">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-orden">Ejercicio 05</div>
+          <div class="nombre">Extensión de columna (Lumbar)</div>
+          <div class="badges">
+            <span class="badge b-y">3 series</span>
+            <span class="badge b-c">12–15 reps</span>
+            <span class="badge b-o">60 seg descanso</span>
+            <span class="badge b-g">Compensación</span>
+          </div>
+        </div>
+        <span class="icono">▾</span>
+      </div>
+      <div class="detalle">
+        <div class="detalle-inner">
+          <p class="desc">En el banco de extensiones lumbares (o en el suelo en posición de Superman), realiza la extensión del tronco llevando el torso hacia arriba. Trabaja con peso corporal o con un disco ligero sostenido en el pecho. El recorrido termina en posición neutra —no fuerces la hiperextensión al final, ya que no aporta más activación del erector y puede comprimir los discos. Baja de forma controlada siempre.</p>
+          <div class="consejo">
+            <span class="consejo-icon">💡</span>
+            <span>Cierra siempre la sesión de core con este ejercicio. El equilibrio entre musculatura anterior (abdominal) y posterior (erector espinal, glúteos) es fundamental para la salud lumbar a largo plazo.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="orden-bloque">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">ORDEN DE TRABAJO</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="orden-grid">
+      <div class="orden-item">
+        <div class="orden-n">01</div>
+        <div class="orden-nombre">Press Pallof<br>en polea</div>
+      </div>
+      <div class="orden-item">
+        <div class="orden-n">02</div>
+        <div class="orden-nombre">Crunch<br>en polea</div>
+      </div>
+      <div class="orden-item">
+        <div class="orden-n">03</div>
+        <div class="orden-nombre">Ab Wheel<br>Rollout</div>
+      </div>
+      <div class="orden-item">
+        <div class="orden-n">04</div>
+        <div class="orden-nombre">Dragon<br>Flags</div>
+      </div>
+      <div class="orden-item">
+        <div class="orden-n">05</div>
+        <div class="orden-nombre">Extensión<br>Lumbar</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span class="footer-left">TSEAS · Entrenamiento Deportivo · 2025</span>
+    <span class="footer-right">Sesión Core &amp; Fuerza — Programa de Acondicionamiento</span>
+  </div>
+
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tarjetas = document.querySelectorAll('.tarjeta');
+    tarjetas.forEach((t, i) => {
+      t.style.opacity = '0';
+      t.style.transform = 'translateY(16px)';
+      t.style.transition = `opacity 0.4s ease ${i * 0.07}s, transform 0.4s ease ${i * 0.07}s, background 0.18s ease`;
+      setTimeout(() => {
+        t.style.opacity = '1';
+        t.style.transform = 'translateX(0)';
+      }, 80 + i * 70);
+    });
+  });
+</script>
+
+</body>
+</html>
